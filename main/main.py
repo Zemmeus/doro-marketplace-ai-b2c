@@ -13,6 +13,7 @@ from aiogram.dispatcher.filters import Command
 import os
 import pygsheets
 import asyncio
+import phonenumbers
 
 bot = Bot(token='6501950453:AAHAEmpf3Iix2TLUyp-DGdFBXn-IKqBQbKA')#test   6508551273:AAFAUNHu2Jb2Ip69TYFBtUDOhCHvLvlnJ3Y     original 6501950453:AAHAEmpf3Iix2TLUyp-DGdFBXn-IKqBQbKA
 storage = MemoryStorage()
@@ -39,6 +40,17 @@ def find_last_row_with_id(sheet, user_id):
 def split_list(lst, n):
         for i in range(0, len(lst), n):
             yield lst[i:i + n]
+
+# Функция для проверки номера телефона
+def asd(my_string_number):
+    if my_string_number.startswith('8'):
+        my_string_number = '+7' + my_string_number[1:]
+   
+    try:
+        my_number = phonenumbers.parse(my_string_number)
+        return phonenumbers.is_valid_number(my_number)
+    except phonenumbers.phonenumberutil.NumberParseException:
+        return False
 
 
 keyboard1 = InlineKeyboardMarkup(row_width=1)
@@ -71,12 +83,17 @@ button_aromatcoconut = InlineKeyboardButton("Кокос", callback_data="Кок�
 button_aromatcofe = InlineKeyboardButton("Кофейный", callback_data="Кофейный")
 keyboard_aromat.add(button_aromatcitrus,button_aromatflower,button_aromatcoconut,button_aromatcofe)
 
-keyboard_chocolate = InlineKeyboardMarkup(row_width=3)
+keyboard_chocolate2 = InlineKeyboardMarkup(row_width=3)
 button_chocolategorki = InlineKeyboardButton("Горький", callback_data="Горький")
 button_chocolateblack = InlineKeyboardButton("Тёмный", callback_data="Тёмный")
 button_chocolatemilk = InlineKeyboardButton("Молочный", callback_data="Молочный")
 button_chocolatewhite = InlineKeyboardButton("Белый", callback_data="Белый")
-keyboard_chocolate.add(button_chocolategorki,button_chocolateblack,button_chocolatemilk,button_chocolatewhite)
+keyboard_chocolate2.add(button_chocolategorki,button_chocolateblack,button_chocolatemilk,button_chocolatewhite)
+
+keyboard_chocolate1 = InlineKeyboardMarkup(row_width=3)
+button_chocolate1 = InlineKeyboardButton("Шоколад", callback_data="Шоколад")
+button_strawberry_in_chocolate = InlineKeyboardButton("Клубника в шоколаде", callback_data="Клубника в шоколаде")
+keyboard_chocolate1.add(button_chocolate1,button_strawberry_in_chocolate)
 
 keyboard_colorpizhama = InlineKeyboardMarkup(row_width=3)
 button_colorpink = InlineKeyboardButton("Розовый", callback_data="Белый")
@@ -92,15 +109,20 @@ button_sizeL = InlineKeyboardButton("L", callback_data="L")
 button_sizeXL = InlineKeyboardButton("XL", callback_data="XL")
 keyboard_sizepizhama.add(button_sizeS,button_sizeM,button_sizeL,button_sizeXL)
 
+keyboard_jewelery = InlineKeyboardMarkup(row_width=3)
+button_colbe = InlineKeyboardButton("Колье/чокеры", callback_data="Колье")
+button_jewelery_sets = InlineKeyboardButton("Комплекты", callback_data="Комплекты")
+keyboard_jewelery.add(button_colbe,button_jewelery_sets)
 
 keyboard3 = InlineKeyboardMarkup(row_width=3)
 button_skidki = InlineKeyboardButton("Книги", callback_data='Книги')
-button_soap = InlineKeyboardButton("Мыло", callback_data='Мыло')
+# button_soap = InlineKeyboardButton("Мыло", callback_data='Мыло')
 button_bele = InlineKeyboardButton("Пижамы", callback_data='Белье')
-button_chocolate = InlineKeyboardButton("Шоколад", callback_data='Шоколад')
+button_sache = InlineKeyboardButton("Аромасаше", callback_data='Аромасаше')
+button_chocolate = InlineKeyboardButton("Сладости", callback_data='Сладости')
 button_beauty = InlineKeyboardButton("Украшения", callback_data='Украшения')
-button_flower = InlineKeyboardButton("Цветы", callback_data='Цветы')
-keyboard3.add(button_skidki, button_soap, button_bele,button_chocolate,button_beauty,button_flower)
+# button_flower = InlineKeyboardButton("Цветы", callback_data='Цветы')
+keyboard3.add(button_skidki, button_bele,button_chocolate,button_beauty,button_sache)
 ######клавы товаров
 
 
@@ -120,54 +142,75 @@ class Form(StatesGroup):
     jewelery_company = State()
     flowers_company = State()
     chocolate_company = State()
+    chocolate_company1 = State()
     zakaz = State()
     zakaz1 = State()
     sam_podarok = State()
     sam_podarok1 = State()
     asd = State()
     number = State()
+    next1 = State()
 
 product_photos = {
     'Книги': {
-        'budget_<5000': ['11.png', '13.png', '14.png', '15.png', '16.png', '18.png', '19.png', '21.png', '22.png','23.png','24.png','27.png','28.png','29.png','31.png','32.png','33.png','35.png','36.png'],
-        'budget_5000-10000': ['12.png', '17.png', '20.png','25.png','26.png','30.png','34.png',],
+        'budget_<5000': ['50.png', '52.png', '53.png', '54.png', '55.png', '57.png', '58.png', '510.png', '511.png','512.png','513.png','516.png','517.png','518.png','519.png','520.png','521.png','522.png','524.png','525.png'],
+        'budget_5000-10000': ['51.png', '56.png', '59.png','514.png','515.png','523.png'],
         'budget_>10000': 'нету',
     },
-    'Мыло': {
-        'budget_<5000': 'нету',
-        'budget_5000-10000': ['2.png','3.png','1.png'],
-        'budget_>10000': 'нету',
-    },
+    # 'Мыло': {
+    #     'budget_<5000': 'нету',
+    #     'budget_5000-10000': ['2.png','3.png','1.png'],
+    #     'budget_>10000': 'нету',
+    # },
     'Пижамы': {
         'budget_<5000': 'нету',
         'budget_5000-10000': 'нету',
-        'budget_>10000': ['37.png','38.png'],
+        'budget_>10000': ['60.png','61.png','62.png','63.png'],
     },
     'Шоколад': {
-        'budget_<5000': ['7.png','8.png','9.png'],
+        'budget_<5000': ['1001.png','1002.png','1003.png'],
         'budget_5000-10000': 'нету',
-        'budget_>10000': 'нету',
+        'budget_>10000': ['1004.png','1007.png','1009.png','1011.png'],
+    },
+    'Клубника в шоколаде': {
+        'budget_<5000': ['1008.png','1012.png'],
+        'budget_5000-10000': ['1005.png','1006.png','1010.png'],
+        'budget_>10000': ['1004.png','1007.png','1009.png','1011.png'],
     },
     'Украшения': {
-        'budget_<5000': ['10.png'],
-        'budget_5000-10000': ['10.png'],
-        'budget_>10000': ['10.png'],
+        'Колье' : {
+            'budget_<5000': 'нету',
+            'budget_5000-10000': ['4003.png','4004.png','4005.png','4006.png','4007.png','4015.png','4016.png','4018.png','4020.png','4021.png','4022.png','4023.png','4024.png','4025.png','4026.png','4027.png','4028.png','4032.png','4033.png'],
+            'budget_>10000': ['4001.png','4002.png','4008.png','4009.png','4010.png','4011.png','4012.png','4013.png','4014.png','4017.png','4019.png','4029.png','4030.png','4031.png','4034.png','4035.png','4036.png'],
+        },
+        'Комплекты' : {
+            'budget_<5000': 'нету',
+            'budget_5000-10000': 'нету',
+            'budget_>10000': ['4037.png','4038.png'],
+        }
+        
     },
-    'Цветы': {
-        'budget_<5000': 'нету',
-        'budget_5000-10000': ['6.png'],
-        'budget_>10000': ['4.png','5.png'],
+
+    # 'Цветы': {
+    #     'budget_<5000': 'нету',
+    #     'budget_5000-10000': ['6.png'],
+    #     'budget_>10000': ['4.png','5.png'],
+    # }
+    'Аромасаше': {
+        'budget_<5000': ['70.png','71.png','72.png'],
+        'budget_5000-10000': 'нету',
+        'budget_>10000': 'нету',
     }
     
 }
-
+ 
 product_photos_company = {
-    'Книги': ['11.png', '13.png', '14.png', '15.png', '16.png', '18.png', '19.png', '21.png', '22.png','23.png','24.png','27.png','28.png','29.png','31.png','32.png','33.png','35.png','36.png','12.png', '17.png', '20.png','25.png','26.png','30.png','34.png'],
-    'Мыло': ['2.png','3.png','1.png'],
-    'Пижамы': ['37.png','38.png'],
-    'Шоколад': ['7.png','8.png','9.png'],
-    'Украшения': ['10.png'],
-    'Цветы': ['4.png','5.png',"6.png"]
+    'Книги': ['50.png', '52.png', '53.png', '54.png', '55.png', '57.png', '58.png', '510.png', '511.png','512.png','513.png','516.png','517.png','518.png','519.png','520.png','521.png','522.png','524.png','525.png','51.png', '56.png', '59.png','514.png','515.png','523.png'],
+    # 'Мыло': ['2.png','3.png','1.png'],
+    'Пижамы': ['60.png','61.png','62.png','63.png'],
+    'Сладости': ['1001.png','1002.png','1003.png','1008.png','1012.png','1005.png','1006.png','1010.png'],
+    'Украшения': ['4003.png','4004.png','4005.png','4006.png','4007.png','4015.png','4016.png','4018.png','4020.png','4021.png','4022.png','4023.png','4024.png','4025.png','4026.png','4027.png','4028.png','4032.png','4033.png','4001.png','4002.png','4008.png','4009.png','4010.png','4011.png','4012.png','4013.png','4014.png','4017.png','4019.png','4029.png','4030.png','4031.png','4034.png','4035.png','4036.png','4037.png','4038.png'],
+    # 'Цветы': ['4.png','5.png',"6.png"]
 }
 
 data = {
@@ -178,7 +221,8 @@ data = {
     "budget": ".",
     "section" : ".",
     "number_gift": ".",
-    "number": "."
+    "number": ".",
+    "size_pizhama": "."
 }
 5589501552
 @dp.message_handler(commands=['start'], state="*")
@@ -194,8 +238,10 @@ async def start(message: types.Message, state: FSMContext):
         data["section"] = "."
         data["number_gift"] = "."
         data["number"] = "."
+        data["size_pizhama"] = "."
 
         await message.answer("""Вас приветствует Doro Eco Marketplace🎁🎈 - Ваш помощник в выборе идеальных подарков. Давайте начнем!""", reply_markup=keyboard1)
+        await Form.next1.set()
 
         x = [[i for i in data.values()]]
         wks_person.append_table(x, start='A2', end=None,   
@@ -203,15 +249,16 @@ async def start(message: types.Message, state: FSMContext):
 
 
 
-@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Казахстан', 'Узбекистан'])
+@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Казахстан', 'Узбекистан'], state=Form.next1)
 async def process_callback(callback_query: types.CallbackQuery, state: FSMContext):
-        data["country"]=callback_query.data
-        await Form.number.set()
-        await bot.answer_callback_query(callback_query.id)
-        await bot.send_message(callback_query.from_user.id, f"Благодарю❤️ Укажите, пожалуйста, свое имя")
-        row_number_person = find_last_row_with_id(wks_person, data["ID"])
-        if row_number_person:
-            wks_person.update_value((row_number_person, 3), data['country'])
+        async with state.proxy() as data:
+            data["country"]=callback_query.data
+            await Form.number.set()
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, f"Благодарю❤️ Укажите, пожалуйста, свое имя")
+            row_number_person = find_last_row_with_id(wks_person, data["ID"])
+            if row_number_person:
+                wks_person.update_value((row_number_person, 3), data['country'])
 
 @dp.message_handler(state=Form.number)
 async def process_name(message: types.Message, state: FSMContext):
@@ -223,15 +270,28 @@ async def process_name(message: types.Message, state: FSMContext):
         if row_number_person:
             wks_person.update_value((row_number_person, 4), data['name'])
 
+# @dp.message_handler(state=Form.sam_podarok)
+# async def process_name(message: types.Message, state: FSMContext):
+#     async with state.proxy() as data:
+#         data['number'] = message.text
+#         await Form.sam_podarok1.set()
+#         await message.answer(f"""Отлично, {data['name']}🎉 Укажите сумму, которую Вы готовы потратить на подарок😊""",reply_markup=keyboard)
+#         row_number_person = find_last_row_with_id(wks_person, data["ID"])
+#         if row_number_person:
+#             wks_person.update_value((row_number_person, 8), data['number'])
+            
 @dp.message_handler(state=Form.sam_podarok)
 async def process_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['number'] = message.text
-        await Form.sam_podarok1.set()
-        await message.answer(f"""Отлично, {data['name']}🎉 Укажите сумму, которую Вы готовы потратить на подарок😊""",reply_markup=keyboard)
-        row_number_person = find_last_row_with_id(wks_person, data["ID"])
-        if row_number_person:
-            wks_person.update_value((row_number_person, 8), data['number'])
+        if asd(message.text) == True:
+            data['number'] = message.text
+            await Form.sam_podarok1.set()
+            await message.answer(f"""Отлично, {data['name']}🎉 Укажите сумму, которую Вы готовы потратить на подарок😊""", reply_markup=keyboard)
+            row_number_person = find_last_row_with_id(wks_person, data["ID"])
+            if row_number_person:
+                wks_person.update_value((row_number_person, 8), data['number'])
+        else:
+            await message.answer("Некорректный номер телефона. Пожалуйста, введите корректный номер.")
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data in ['budget_<5000', 'budget_5000-10000','budget_>10000'],state=Form.sam_podarok1)
 async def process_name(callback_query: types.CallbackQuery, state: FSMContext):
@@ -276,38 +336,38 @@ async def handle_product_selection(callback_query: types.CallbackQuery, state: F
 
 
 #МЫЛО КОМПАНИИ
-@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Мыло'], state=Form.inline1)
-async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
-    async with state.proxy() as data:
-        data["section"] = "Мыло"
-        await bot.send_message(callback_query.from_user.id, f"Благодарю❤️ Укажите аромат, который Вам по душе…",reply_markup=keyboard_aromat)
-        await Form.soap_company.set()
-        row_number_person = find_last_row_with_id(wks_person, data["ID"])
-        if row_number_person:
-            wks_person.update_value((row_number_person, 6), data['section'])
+# @dp.callback_query_handler(lambda callback_query: callback_query.data in ['Мыло'], state=Form.inline1)
+# async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
+#     async with state.proxy() as data:
+#         data["section"] = "Мыло"
+#         await bot.send_message(callback_query.from_user.id, f"Благодарю❤️ Укажите аромат, который Вам по душе…",reply_markup=keyboard_aromat)
+#         await Form.soap_company.set()
+#         row_number_person = find_last_row_with_id(wks_person, data["ID"])
+#         if row_number_person:
+#             wks_person.update_value((row_number_person, 6), data['section'])
 
-@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Цветочный','Кофейный','Цитрус','Кокос'], state=Form.soap_company)
-async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
-    async with state.proxy() as data:
-        await Form.asd.set()
-        if data["country"]=="Узбекистан"or"Казахстан":
-            if product_photos['Мыло'][data['budget']]=='нету':
-                await bot.send_message(callback_query.from_user.id,f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
-                await Form.sam_podarok1.set()
-            else:
-                await bot.send_message(callback_query.from_user.id,f"Благодарю, {data['name']}❤️ Взгляните на мои рекомендации")
-                file_name = product_photos['Мыло'][data['budget']]
-                photo_groups = list(split_list(file_name, 10))
-                for group in photo_groups:
-                    media = types.MediaGroup()
-                    for photo_url in group:
-                        photo = open(photo_url, 'rb')
-                        media.attach_photo(photo) 
-                    await bot.send_media_group(callback_query.from_user.id, media=media)  
-                await bot.send_message(callback_query.from_user.id,f"Хотите заказать или посмотреть еще?",reply_markup=keyboard_4)
+# @dp.callback_query_handler(lambda callback_query: callback_query.data in ['Цветочный','Кофейный','Цитрус','Кокос'], state=Form.soap_company)
+# async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
+#     async with state.proxy() as data:
+#         await Form.asd.set()
+#         if data["country"]=="Узбекистан"or"Казахстан":
+#             if product_photos['Мыло'][data['budget']]=='нету':
+#                 await bot.send_message(callback_query.from_user.id,f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
+#                 await Form.sam_podarok1.set()
+#             else:
+#                 await bot.send_message(callback_query.from_user.id,f"Благодарю, {data['name']}❤️ Взгляните на мои рекомендации")
+#                 file_name = product_photos['Мыло'][data['budget']]
+#                 photo_groups = list(split_list(file_name, 10))
+#                 for group in photo_groups:
+#                     media = types.MediaGroup()
+#                     for photo_url in group:
+#                         photo = open(photo_url, 'rb')
+#                         media.attach_photo(photo) 
+#                     await bot.send_media_group(callback_query.from_user.id, media=media)  
+#                 await bot.send_message(callback_query.from_user.id,f"Хотите заказать или посмотреть еще?",reply_markup=keyboard_4)
 
 
-#БЕЛЬЕ КОМПАНИИ
+#ПИЖАМЫ КОМПАНИИ
 @dp.callback_query_handler(lambda callback_query: callback_query.data in ['Белье'], state=Form.inline1)
 async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
@@ -322,17 +382,10 @@ async def handle_product_selection(callback_query: types.CallbackQuery, state: F
 @dp.callback_query_handler(lambda callback_query: callback_query.data in ['S','M','L','XL'], state=Form.belbe_company)
 async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
-        await bot.send_message(callback_query.from_user.id,f"Благодарю❤️ Укажите цвет пижамы, который Вы предпочитаете…",reply_markup=keyboard_colorpizhama)
-        await Form.belbe1_company.set()
-
-
-@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Чёрный','Синий','Белый','Фуксия'], state=Form.belbe1_company)
-async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
-    async with state.proxy() as data:
+        data["size_pizhama"] = "Пижамы"
         await Form.asd.set()
         if product_photos['Пижамы'][data['budget']]=='нету':
             await bot.send_message(callback_query.from_user.id,f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
-    
             await Form.sam_podarok1.set()
         else:
             await bot.send_message(callback_query.from_user.id,f"Благодарю, {data['name']}❤️ Взгляните на мои рекомендации")
@@ -345,21 +398,73 @@ async def handle_product_selection(callback_query: types.CallbackQuery, state: F
                     media.attach_photo(photo) 
                 await bot.send_media_group(callback_query.from_user.id, media=media)  
             await bot.send_message(callback_query.from_user.id,f"Хотите заказать или посмотреть еще?",reply_markup=keyboard_4)
+        row_number_person = find_last_row_with_id(wks_person, data["ID"])
+        if row_number_person:
+            wks_person.update_value((row_number_person, 7), data['size_pizhama'])
+
+
+# @dp.callback_query_handler(lambda callback_query: callback_query.data in ['Чёрный','Синий','Белый','Фуксия'], state=Form.belbe1_company)
+# async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
+#     async with state.proxy() as data:
+#         await Form.asd.set()
+#         if product_photos['Пижамы'][data['budget']]=='нету':
+#             await bot.send_message(callback_query.from_user.id,f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
+    
+#             await Form.sam_podarok1.set()
+#         else:
+#             await bot.send_message(callback_query.from_user.id,f"Благодарю, {data['name']}❤️ Взгляните на мои рекомендации")
+#             file_name = product_photos['Пижамы'][data['budget']]
+#             photo_groups = list(split_list(file_name, 10))
+#             for group in photo_groups:
+#                 media = types.MediaGroup()
+#                 for photo_url in group:
+#                     photo = open(photo_url, 'rb')
+#                     media.attach_photo(photo) 
+#                 await bot.send_media_group(callback_query.from_user.id, media=media)  
+#             await bot.send_message(callback_query.from_user.id,f"Хотите заказать или посмотреть еще?",reply_markup=keyboard_4)
 
 #ШОКОЛАД КОМПАНИИ
-@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Шоколад'], state=Form.inline1)
+@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Сладости'], state=Form.inline1)
 async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
-        data["section"] = "Шоколад"
-        await bot.send_message(callback_query.from_user.id, f"Благодарю❤️ Укажите вид шоколада, который Вас интересует…",reply_markup=keyboard_chocolate)
+        data["section"] = "Сладости"
+        await bot.send_message(callback_query.from_user.id, f"Благодарю❤️ Укажите вид сладостей, который Вас интересует…",reply_markup=keyboard_chocolate1)
         await Form.chocolate_company.set()
         row_number_person = find_last_row_with_id(wks_person, data["ID"])
         if row_number_person:
             wks_person.update_value((row_number_person, 6), data['section'])
 
+@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Клубника в шоколаде'], state=Form.chocolate_company)
+async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data["section"] = "Клубника в шоколаде"
+        await Form.asd.set()
+        if product_photos['Клубника в шоколаде'][data['budget']]=='нету':
+            await bot.send_message(callback_query.from_user.id,f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
+            await Form.sam_podarok1.set()
+        else:
+            await bot.send_message(callback_query.from_user.id, "Благодарю❤️ Взгляните на мои рекомендации🎁")
+            file_name = product_photos['Клубника в шоколаде'][data['budget']]
+            photo_groups = list(split_list(file_name, 10))
+            for group in photo_groups:
+                media = types.MediaGroup()
+                for photo_url in group:
+                    photo = open(photo_url, 'rb')
+                    media.attach_photo(photo) 
+                await bot.send_media_group(callback_query.from_user.id, media=media)  
+            await bot.send_message(callback_query.from_user.id,f"Хотите заказать или посмотреть еще?",reply_markup=keyboard_4)
+        row_number_person = find_last_row_with_id(wks_person, data["ID"])
+        if row_number_person:
+            wks_person.update_value((row_number_person, 6), data['section'])
 
+@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Шоколад'], state=Form.chocolate_company)
+async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data["section"] = "Шоколад" 
+        await bot.send_message(callback_query.from_user.id,f"Благодарю❤️ Укажите вид шоколада, который Вас интересует…",reply_markup=keyboard_chocolate2)
+        await Form.chocolate_company1.set()
 
-@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Горький','Белый','Молочный','Тёмный'], state=Form.chocolate_company)
+@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Горький','Белый','Молочный','Тёмный'], state=Form.chocolate_company1)
 async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
         await Form.asd.set()
@@ -384,44 +489,68 @@ async def handle_product_selection(callback_query: types.CallbackQuery, state: F
 async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
         data["section"] = "Украшения"
-        await bot.send_message(callback_query.from_user.id, f"Благодарю❤️ Укажите вид украшений, который Вас интересует…")
+        await bot.send_message(callback_query.from_user.id, f"Благодарю❤️ Укажите вид украшений, который Вас интересует…",reply_markup=keyboard_jewelery)
         await Form.jewelery_company.set()
         row_number_person = find_last_row_with_id(wks_person, data["ID"])
         if row_number_person:
             wks_person.update_value((row_number_person, 6), data['section'])
     
-@dp.message_handler(state=Form.jewelery_company)
-async def process_name(message: types.Message, state: FSMContext):
+@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Колье','Комплекты'], state=Form.jewelery_company)
+async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
         await Form.asd.set()
-        if product_photos['Украшения'][data['budget']]=='нету':
-            await message.answer(f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
+        if product_photos['Украшения'][callback_query.data][data['budget']]=='нету':
+            await bot.send_message(callback_query.from_user.id,f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
             await Form.sam_podarok1.set()
         else:
-            await message.answer(f"Благодарю, {data['name']}❤️ Взгляните на мои рекомендации")
-            file_name = product_photos['Украшения'][data['budget']]
+            await bot.send_message(callback_query.from_user.id,f"Благодарю, {data['name']}❤️ Взгляните на мои рекомендации")
+            file_name = product_photos['Украшения'][callback_query.data][data['budget']]
             photo_groups = list(split_list(file_name, 10))
             for group in photo_groups:
                 media = types.MediaGroup()
                 for photo_url in group:
                     photo = open(photo_url, 'rb')
                     media.attach_photo(photo) 
-                await bot.send_media_group(chat_id=message.chat.id, media=media)  
-            await message.answer(f"Хотите заказать или посмотреть еще?",reply_markup=keyboard_4) 
+                await bot.send_media_group(callback_query.from_user.id, media=media)  
+            await bot.send_message(callback_query.from_user.id,f"Хотите заказать или посмотреть еще?",reply_markup=keyboard_4) 
 
 
 #ЦВЕТЫ КОМПАНИИ
-@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Цветы'], state=Form.inline1)
+# @dp.callback_query_handler(lambda callback_query: callback_query.data in ['Цветы'], state=Form.inline1)
+# async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
+#     async with state.proxy() as data:
+#         data["section"] = "Цветы"
+#         await Form.asd.set()
+#         if product_photos['Цветы'][data['budget']]=='нету':
+#             await bot.send_message(callback_query.from_user.id,f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
+#             await Form.sam_podarok1.set()
+#         else:
+#             await bot.send_message(callback_query.from_user.id, "Благодарю❤️ Взгляните на мои рекомендации🎁")
+#             file_name = product_photos['Цветы'][data['budget']]
+#             photo_groups = list(split_list(file_name, 10))
+#             for group in photo_groups:
+#                 media = types.MediaGroup()
+#                 for photo_url in group:
+#                     photo = open(photo_url, 'rb')
+#                     media.attach_photo(photo) 
+#                 await bot.send_media_group(callback_query.from_user.id, media=media)  
+#             await bot.send_message(callback_query.from_user.id,f"Хотите заказать или посмотреть еще?",reply_markup=keyboard_4)
+#         row_number_person = find_last_row_with_id(wks_person, data["ID"])
+#         if row_number_person:
+#             wks_person.update_value((row_number_person, 6), data['section'])
+
+#Аромасаше
+@dp.callback_query_handler(lambda callback_query: callback_query.data in ['Аромасаше'], state=Form.inline1)
 async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
-        data["section"] = "Цветы"
+        data["section"] = "Аромасаше"
         await Form.asd.set()
-        if product_photos['Цветы'][data['budget']]=='нету':
+        if product_photos['Аромасаше'][data['budget']]=='нету':
             await bot.send_message(callback_query.from_user.id,f"Прошу прощения, в данный момент выбранный Вами подарок приобрести невозможно😔 Я делаю всё возможное, чтобы предоставить Вам больше вариантов🫶",reply_markup=keyboard)
             await Form.sam_podarok1.set()
         else:
             await bot.send_message(callback_query.from_user.id, "Благодарю❤️ Взгляните на мои рекомендации🎁")
-            file_name = product_photos['Цветы'][data['budget']]
+            file_name = product_photos['Аромасаше'][data['budget']]
             photo_groups = list(split_list(file_name, 10))
             for group in photo_groups:
                 media = types.MediaGroup()
@@ -443,24 +572,28 @@ async def handle_product_selection(callback_query: types.CallbackQuery, state: F
 @dp.message_handler(state=Form.zakaz1)
 async def process_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['number_gift'] = message.text
-        await message.answer(f"Благодарю за выбор🎁")
-        await message.answer(f"С Вами свяжется наш менеджер для уточнения деталей по доставке и оплате. До встречи❤️")
-        row_number_person = find_last_row_with_id(wks_person, data["ID"])
-        if row_number_person:
-            wks_person.update_value((row_number_person, 7), data['number_gift'])
-        print(data)
-        await state.finish()
-        await bot.send_message(CONSTANT_USER_ID, f"""
-ID - {data['ID']}
-Имя пользователя - {data['UserName']}
-Страна - {data['country']}
-Имя - {data['name']}
-Раздел - {data['section']}
-Бюджет - {data['budget']}
-Номер подарка - {data['number_gift']}
-Номер телефона - {data['number']}
-""")
+        if message.text.isdigit():
+            data['number_gift'] = message.text
+            await message.answer(f"Благодарю за выбор🎁")
+            await message.answer(f"С Вами свяжется наш менеджер для уточнения деталей по доставке и оплате. До встречи❤️")
+            row_number_person = find_last_row_with_id(wks_person, data["ID"])
+            if row_number_person:
+                wks_person.update_value((row_number_person, 7), data['number_gift'])
+            print(data)
+            await state.finish()
+            await bot.send_message(CONSTANT_USER_ID, f"""
+    ID - {data['ID']}
+    Имя пользователя - {data['UserName']}
+    Страна - {data['country']}
+    Имя - {data['name']}
+    Раздел - {data['section']}
+    Бюджет - {data['budget']}
+    Размер пижамы - {data['size_pizhama']}
+    Номер подарка - {data['number_gift']}
+    Номер телефона - {data['number']}
+    """)
+        else:
+            await message.answer(f"Пожалуйста введите номер товара, который Вы хотите приобрести…")
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data in ['eche'], state=Form.asd)
 async def handle_product_selection(callback_query: types.CallbackQuery, state: FSMContext):
